@@ -23,4 +23,5 @@ To get started with Semantic Kernel Web, follow these steps:
  15. Update the config.json file with your PostgreSQL connection string,SearXNG server URL, comfy information and Ollama Url.
  16. Run the application.
 
+#Welcome Screen
 ![Screenshot of the welcome screen.](https://github.com/FairfieldTekLLC/SematicKernelWeb/blob/main/WelcomeScreen.png?raw=true)
