@@ -17,7 +17,10 @@
 # 10. Open the project in Visual Studio or your preferred IDE.
 # 11. Restore the NuGet packages.
 # 12. Download Comfy at https://github.com/comfyanonymous/ComfyUI/releases/latest/download/ComfyUI_windows_portable_nvidia.7z
+<<<<<<< HEAD
 # 12a. Download the Checkpoint model at https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5/blob/main/v1-5-pruned-emaonly.safetensors
+=======
+>>>>>>> ade1c5a00a70ea91493762e1e5686294a46b21b9
 # 13. Open the folder you installed Comfy in and go to "Models\Checkpoints" and copy "v1-5-pruned-emaonly.safetensors" into it.  This is the Model I use to generate images.
 # 14. Start Comfy, if you have a gpu you can run "run_nvidia_gpu_fast_fp16_accumulation.bat" else you can run "run_cpu.bat".  If you have a gpu and want to use it, make sure you have the latest NVIDIA drivers installed.
 # 15. Update the config.json file with your PostgreSQL connection string,SearXNG server URL, comfy information and Ollama Url.
