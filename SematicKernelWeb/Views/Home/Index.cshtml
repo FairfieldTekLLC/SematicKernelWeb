@@ -1,0 +1,75 @@
+﻿@using SematicKernelWeb.Controllers.ViewModels
+@model List<SematicKernelWeb.Controllers.ViewModels.ConversationVM>
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<script>
+    function OpenChat(id) {
+        window.location.href = '@Url.Action("UserInteraction", "Home")' + '?conversationId=' + id;
+    }
+
+   
+
+    function DeleteChat(id){
+        $.post('@Url.Action("DeleteConversation", "Home")', {
+                     conversationId: id
+                 }, function(data){
+                        location.reload(); // Reload the page to see the new conversation
+                    }).fail(function(xhr, status, error) {
+                        alert("Error occurred: " + error);
+                 });
+
+
+    }
+    function CreateNewConversation_click (e)
+    {
+        
+
+    }
+    $(document).ready(function() 
+        {
+        console.log( "ready!" );
+        $("#btn-create-conversation")
+            .click(function()
+                {
+                var lurl = String($(this).data('id'));
+                $(".modal-body").load(lurl);
+                }
+            );
+        }
+    );
+
+</script>
+<h1>Welcome, @User.Identity.Name</h1>
+
+<button id="btn-create-conversation" type="button" class="btn btn-primary" data-id='@Url.Action("CreateConversationView", "Home")' data-bs-toggle="modal" data-bs-target="#staticBackdrop">Create New Conversation</button>
+
+
+<table style="width:100%">
+    <tr>
+        <td>ID</td>
+        <td>Title</td>
+        <td>Description</td>
+        <td>Actions</td>
+    </tr>
+    @foreach (ConversationVM conversation in Model)
+    {
+        <tr>
+            <td>@conversation.Id</td>
+            <td>@conversation.Title</td>
+            <td>@conversation.Description</td>
+            <td>
+                <input value="Open" type="button" onclick="OpenChat('@conversation.Id')"/>
+            </td>
+            <td>
+                <input value="Delete" type="button" onclick="DeleteChat('@conversation.Id')"/>
+            </td>
+        </tr>
+    }
+</table>
+
+<script>
+
+</script>
