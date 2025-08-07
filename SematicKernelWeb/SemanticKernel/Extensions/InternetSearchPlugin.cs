@@ -125,7 +125,7 @@ public class InternetSearchPlugin
                 {
                     urls.Add(result.url);
                     resultText.AppendLine("Title: " + result.title);
-                    resultText.AppendLine("Url: " + result.url);
+                    resultText.AppendLine("Url: <a href='" + result.url + "'>" + result.url +"</a>");
                     resultText.AppendLine("Content: " + result.content);
                     resultText.AppendLine("--------------------------------------------------");
                     counter++;
