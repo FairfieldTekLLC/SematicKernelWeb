@@ -384,7 +384,7 @@ public class Conversation
     public async Task RunConversation(ISemanticKernelService kernal, IBackendWorker worker)
     {
         await worker.SendMessage(Id, "Starting conversation.....");
-        List<OllamaSend.Message> messages = new List<OllamaSend.Message>();
+        List<Message> messages = new List<Message>();
         foreach (Entry item in PromptsOrSearches.OrderBy(x => x.Sequence))
             switch (item.Type)
             {
@@ -395,7 +395,7 @@ public class Conversation
                     break;
                 }
                 case ConversationType.Prompt:
-                    messages.Add(new OllamaSend.Message
+                    messages.Add(new Message
                     {
                         content = await kernal.Prompt(item.Text),
                         role = item.Role.ToString().ToLowerInvariant()
