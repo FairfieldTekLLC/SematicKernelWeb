@@ -16,7 +16,7 @@ namespace SematicKernelWeb.Domain;
 
 public class Conversation
 {
-    public static int MaxNumberOfResults = 1;
+    public static int MaxNumberOfResults = 5;
 
 
     public Guid Id { get; set; } = Guid.Empty;
@@ -267,7 +267,7 @@ public class Conversation
                     counter++;
                 }
 
-                if (counter > MaxNumberOfResults)
+                if (counter >= MaxNumberOfResults)
                     break;
             }
 
