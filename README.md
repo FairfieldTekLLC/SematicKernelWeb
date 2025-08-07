@@ -36,5 +36,8 @@ To get started with Semantic Kernel Web, follow these steps:
 # User Interface
 ![Telling the UI to draw a picture.](https://github.com/FairfieldTekLLC/SematicKernelWeb/blob/main/DrawAPicture.png?raw=true)
 
-#Internet Search
+# Internet Search
 ![Searching the internet for information about dogs.](https://github.com/FairfieldTekLLC/SematicKernelWeb/blob/main/Dogs.png?raw=true)
+
+# Summarizing information it learned from the internet search
+![Searching the internet for information about dogs.](https://github.com/FairfieldTekLLC/SematicKernelWeb/blob/main/Dogs2.png?raw=true)
