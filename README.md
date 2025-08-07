@@ -9,6 +9,11 @@ I will warn you, if you don't have a decent GPU, gtx 3090 or greater the AI will
 
 Also, this project assumes your connected to a domain and uses negiotiate  authentication to identify the user.  I plan to add Forms authentication at some point, but I haven't gotten to it.
 
+# Resources used:
+ 1. Ollama
+ 2. ComfyUI
+ 3. Postgresql
+ 4. EntityFramework for Postgresql
 
 # Getting Started
 To get started with Semantic Kernel Web, follow these steps:
