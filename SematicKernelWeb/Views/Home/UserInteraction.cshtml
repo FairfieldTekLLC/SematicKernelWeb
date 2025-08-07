@@ -1,0 +1,137 @@
+﻿@model SematicKernelWeb.Controllers.ViewModels.ConversationVM
+@{
+    ViewData["Title"] = "User Interaction";
+}
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-3">
+            <h2 class="text-center">User Interaction</h2>
+            <p>-To load a url, type "Load url {url}"</p>
+            <p>-To search and load resources from the internet, type "Search for {topic}"</p>
+            <p>-An example prompt would be, "Tell me verbosely about ....."</p>
+            <p>-To generate an image, type "Draw me a picture of ...."</p>
+
+        </div>
+        <div class="text-center col-md-9">
+            <div class="text-center">
+                <h1>
+                    <div>Title: <span id="ConversationTitle">@Model.Title</span></div>
+                </h1>
+                <h1>
+                    <div>Description: <span id="ConversationDescription">@Model.Description</span></div>
+                </h1>
+                <span id="span-conversation-id" style="visibility:collapse">@Model.Id</span>
+            </div>
+
+            <textarea id="txt-prompt" rows="10" style="width:100%"></textarea>
+            <div>Action Type</div>
+            <select id="select-action-type" onchange="PromptChange()">
+                <option value="ask">Ask Vinoogle</option>
+                <option value="importText">Import Text</option>
+                <option value="uploadPdf">Upload Pdf</option>
+            </select>
+
+            <button id="btn-create-conversation" type="button" class="btn btn-primary" data-id='@Url.Action("status", "Home")' data-bs-toggle="modal" data-bs-target="#staticBackdrop">Submit</button>
+
+            <div id="FileUpload" style="display:none">
+                <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="UploadFile">
+                    <span>Select File:</span>
+                    <input type="text" name="ConversationId" id="ConversationID" style="visibility:collapse" value="@Model.Id"/>
+                    <input type="file" name="postedFiles" accept=".pdf" multiple/>
+                    <input type="submit" value="Upload"/>
+                    <br/>
+                    <span style="color:green">@Html.Raw(ViewBag.Message)</span>
+                </form>
+            </div>
+
+            @{
+                WriteLiteral(Model.ConversationText);
+            }
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function()
+        {
+        console.log( "ready!" );
+        $("#btn-create-conversation")
+            .click(function()
+                {
+                var lurl = String($(this).data('id'));
+                $(".modal-body").load(lurl);
+                btnSubmitClick();
+                }
+            );
+        }
+    );
+
+    function PromptChange(){
+        var conceptName = $('#select-action-type').find(":selected").val();
+        if (conceptName == "uploadPdf")
+        {
+            $("#txt-prompt").hide();
+            $("#btn-submit").hide();
+            $("#FileUpload").show();
+
+        }
+        else
+        {
+            $("#txt-prompt").show();
+            $("#btn-submit").show();
+            $("#FileUpload").hide();
+        }
+    }
+
+
+    function btnSubmitClick() {
+
+
+       const prompt = $('#txt-prompt').val();
+      // alert(prompt);
+        var isWebSearch = false;
+                 var isPrompt = false;
+                 var isUrl = false;
+                 var importText = false;
+                 var ask = false
+
+                 var conversationId = $('#span-conversation-id').html();
+
+
+                 var conceptName = $('#select-action-type').find(":selected").val();
+                    if (conceptName === "webSearch") {
+                        isWebSearch = true;
+                    } else if (conceptName === "prompt") {
+                        isPrompt = true;
+                    } else if (conceptName === "url") {
+                        isUrl = true;
+                    } else if (conceptName == "importText")
+                    {
+                        importText=true;
+                    } else if (conceptName == "ask") {
+                        ask = true;
+                    }
+        $.post('@Url.Action("ProcessPrompt", "Home")', {
+                     prompt: prompt,
+                     isWebSearch: isWebSearch,
+                     isPrompt: isPrompt,
+                     conversationId: conversationId,
+                     isUrl: isUrl,
+                     importText : importText,
+                     ask: ask
+                 }, function(data){
+                        location.reload();
+                        // Optionally, you can alert the result
+                    }).fail(function(xhr, status, error) {
+                        alert("Error occurred: " + error);
+                 });
+    }
+
+
+
+</script>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
