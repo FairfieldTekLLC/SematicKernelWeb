@@ -1,6 +1,8 @@
 ﻿using System.Data;
 using Dapper;
 using Npgsql;
+using Org.BouncyCastle.Math.EC;
+using SematicKernelWeb.Classes;
 
 namespace SematicKernelWeb.Database;
 
@@ -8,7 +10,7 @@ public class DbContext
 {
     public IDbConnection CreateConnection()
     {
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(DbConstants.ConnectionString);
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(Config.Instance.ConnectionString);
         dataSourceBuilder.UseVector();
         var dataSource = dataSourceBuilder.Build();
         return dataSource.OpenConnection();
@@ -24,13 +26,13 @@ public class DbContext
     {
         // create database if it doesn't exist
         await using var connection =
-            new NpgsqlConnection(DbConstants.ConnectionString.Replace(DbConstants.DatabaseName, "postgres"));
+            new NpgsqlConnection(Config.Instance.ConnectionString.Replace(Config.Instance.DatabaseName, "postgres"));
         var sqlDbCount =
-            $"SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '{DbConstants.DatabaseName}');";
+            $"SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '{Config.Instance.DatabaseName}');";
         var dbCount = await connection.ExecuteScalarAsync<int>(sqlDbCount);
         if (dbCount == 0)
         {
-            var sql = $"CREATE DATABASE \"{DbConstants.DatabaseName}\"";
+            var sql = $"CREATE DATABASE \"{Config.Instance.DatabaseName}\"";
             await connection.ExecuteAsync(sql);
         }
     }

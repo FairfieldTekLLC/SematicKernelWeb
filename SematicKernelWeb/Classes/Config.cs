@@ -23,7 +23,7 @@ public class Config
 
     public string SearXngUrl { get; set; }
 
-    public List<string> ignoreSites { get; set; }
+    public List<string> IgnoreSites { get; set; }
     public string SystemPrompt { get; set; }
 
 
@@ -50,7 +50,7 @@ public class Config
             Model = config.Model;
             OllamaServerUrl = config.OllamaServerUrl;
             SearXngUrl = config.SearXngUrl;
-            ignoreSites = config.ignoreSites;
+            IgnoreSites = config.IgnoreSites;
             SystemPrompt = config.SystemPrompt;
             DatabaseName = config.DatabaseName;
             ConnectionString = config.ConnectionString;

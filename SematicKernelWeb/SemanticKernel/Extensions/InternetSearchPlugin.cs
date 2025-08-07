@@ -79,7 +79,7 @@ public class InternetSearchPlugin
 
     private bool LoadSite(string url)
     {
-        return Config.Instance.ignoreSites.All(site =>
+        return Config.Instance.IgnoreSites.All(site =>
             !url.Contains(site, StringComparison.InvariantCultureIgnoreCase));
     }
 
