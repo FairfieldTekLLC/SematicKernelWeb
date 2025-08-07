@@ -22,3 +22,5 @@ To get started with Semantic Kernel Web, follow these steps:
  14. Start Comfy, if you have a gpu you can run "run_nvidia_gpu_fast_fp16_accumulation.bat" else you can run "run_cpu.bat".  If you have a gpu and want to use it, make sure you have the latest NVIDIA drivers installed.
  15. Update the config.json file with your PostgreSQL connection string,SearXNG server URL, comfy information and Ollama Url.
  16. Run the application.
+
+![Screenshot of the welcome screen.]([https://myoctocat.com/assets/images/base-octocat.svg](https://github.com/FairfieldTekLLC/SematicKernelWeb/blob/main/WelcomeScreen.png?raw=true))
