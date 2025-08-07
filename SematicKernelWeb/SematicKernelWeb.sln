@@ -14,10 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		..\README.md = ..\README.md
-<<<<<<< HEAD
-=======
-		..\..\..\ComfyUI\models\checkpoints\v1-5-pruned-emaonly.safetensors = ..\..\..\ComfyUI\models\checkpoints\v1-5-pruned-emaonly.safetensors
->>>>>>> ade1c5a00a70ea91493762e1e5686294a46b21b9
 	EndProjectSection
 EndProject
 Global
