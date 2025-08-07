@@ -2,6 +2,8 @@
 Semantic Kernel Web is a web application that provides a user interface for interacting with the Semantic Kernel, a framework for building AI applications.  It's much like a simple ChatGDP client, it allows you to search for topics on the internet and then ask questions about the results.  You can also upload documents manually or specify a url to load.  Think of it as a ChatGDP light.
 It allows users to create, manage, and execute AI workflows using various AI models and tools.
 
+All of the resources this project uses are opensource and free.  So you don't need to get an azure account, etc.  
+
 ## Note:
 I will warn you, if you don't have a decent GPU, gtx 3090 or greater the AI will perform very slowly.  The better the GPU's and the more of them the better this project performs.
 
