@@ -12,6 +12,7 @@
   "ConnectionString": "Host=<PostGreSqlServer>;Port=5432;Username=<UserName>;Password=<Password>; Include Error Detail=true;database=<Database>",
   "LogFilePath": "C:\\Logs\\SematicKernelWeb\\",
   "CurrentLogLevel": 2,
-  "ComfyUrl": "http://localhost:8188/prompt"
+  "ComfyUrl": "http://localhost:8188/prompt",
+  "VisionModel": "llava:13b"
 
 }

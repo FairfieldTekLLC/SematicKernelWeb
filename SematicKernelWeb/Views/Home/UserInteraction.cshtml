@@ -32,6 +32,7 @@
                 <option value="ask">Ask Vinoogle</option>
                 <option value="importText">Import Text</option>
                 <option value="uploadPdf">Upload Pdf</option>
+                <option value="imageToText">Image To Text</option>
             </select>
 
             <button id="btn-create-conversation" type="button" class="btn btn-primary" data-id='@Url.Action("status", "Home")' data-bs-toggle="modal" data-bs-target="#staticBackdrop">Submit</button>
@@ -41,6 +42,17 @@
                     <span>Select File:</span>
                     <input type="text" name="ConversationId" id="ConversationID" style="visibility:collapse" value="@Model.Id"/>
                     <input type="file" name="postedFiles" accept=".pdf" multiple/>
+                    <input type="submit" value="Upload"/>
+                    <br/>
+                    <span style="color:green">@Html.Raw(ViewBag.Message)</span>
+                </form>
+            </div>
+            
+            <div id="ImageToTextUpload" style="display:none">
+                <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="ImageToText">
+                    <span>Select File:</span>
+                    <input type="text" name="ConversationId" id="ConversationID" style="visibility:collapse" value="@Model.Id"/>
+                    <input type="file" name="postedFiles" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff,.ico,.svg" multiple/>
                     <input type="submit" value="Upload"/>
                     <br/>
                     <span style="color:green">@Html.Raw(ViewBag.Message)</span>
@@ -76,13 +88,21 @@
             $("#txt-prompt").hide();
             $("#btn-submit").hide();
             $("#FileUpload").show();
-
+            $("#ImageToTextUpload").hide();
+        }
+        else if (conceptName=="imageToText")
+        {
+             $("#txt-prompt").hide();
+            $("#btn-submit").hide();
+            $("#FileUpload").hide();
+            $("#ImageToTextUpload").show();
         }
         else
         {
             $("#txt-prompt").show();
             $("#btn-submit").show();
             $("#FileUpload").hide();
+            $("#ImageToTextUpload").hide();
         }
     }
 

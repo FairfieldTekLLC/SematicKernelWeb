@@ -9,5 +9,6 @@ public enum ConversationType
     ImportText = 5,
     UploadFile = 6,
     Ask = 7,
-    Comfy = 8
+    Comfy = 8,
+    ImageToText = 9
 }

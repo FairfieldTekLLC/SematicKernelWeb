@@ -20,6 +20,8 @@ public static class SemanticKernelExtensions
 
         IKernelMemory memory = new KernelMemoryBuilder()
             .WithOllamaTextEmbeddingGeneration(Config.Instance.EmbeddingModel, Config.Instance.OllamaServerUrl)
+
+
             .WithOllamaTextGeneration(Config.Instance.Model, Config.Instance.OllamaServerUrl)
             .WithSearchClientConfig(new SearchClientConfig
             {
@@ -45,10 +47,19 @@ public static class SemanticKernelExtensions
 
 
         IKernelBuilder kernelBuilder = Kernel.CreateBuilder();
+        
 
+
+        //Register the Ollama client
         kernelBuilder.AddOllamaChatCompletion(client);
+
+        // Register the Ollama text generation and embedding generation clients
         kernelBuilder.AddOllamaTextGeneration(client);
+
+        // Register the Ollama chat client
         kernelBuilder.AddOllamaChatClient(client);
+
+        // Register the Ollama embedding generation client
         kernelBuilder.AddOllamaEmbeddingGenerator(client);
 
 

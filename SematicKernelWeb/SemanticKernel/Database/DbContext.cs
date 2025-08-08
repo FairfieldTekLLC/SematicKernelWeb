@@ -185,6 +185,7 @@ ALTER TABLE IF EXISTS public.fetcheddocs
                 ctx.Conversationtypes.Add(new Conversationtype { Name = "UploadFile" });
                 ctx.Conversationtypes.Add(new Conversationtype { Name = "Ask" });
                 ctx.Conversationtypes.Add(new Conversationtype { Name = "Comfy" });
+                ctx.Conversationtypes.Add(new Conversationtype { Name = "ImageToText" });
                 await ctx.SaveChangesAsync();
             }
 

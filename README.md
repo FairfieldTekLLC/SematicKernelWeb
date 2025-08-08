@@ -23,6 +23,7 @@ To get started with Semantic Kernel Web, follow these steps:
  4. Start Ollama
  5. Open a command prompt and type in "ollama pull granite3-dense:8b"
  6. Once that finishes type in "ollama pull PetrosStav/gemma3-tools:12b"
+ 6. Once that finishes type in "ollama pull llava:13b"
  7. Ok, next step is to install PostgreSQL.  I used the latest version which is 16.2.  You can find it at https://www.postgresql.org/download/windows/
  8. Make sure if your not using the docker build that you add in vector support.  You can find the instructions at https://www.postgresql.org/docs/current/pgvector.html
  9. Create a database called "semantic_kernel_web" and a user called "semantic_kernel_web" with the password "semantic_kernel_web".

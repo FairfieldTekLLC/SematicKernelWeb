@@ -278,6 +278,15 @@ public class HomeController(
 
                     break;
                 }
+                case ConversationType.ImageToText:
+                {
+                    string base64String = Convert.ToBase64String(item.FileData);
+                    string imageHtml = @"<div><img src=""data:image/png;base64," + base64String +
+                                       @""" width=""400"" height=""400""></div><div>" + item.ResultText + "</div>";
+                    output += makeAccordian("Image to Text Result", imageHtml, item.Sequence, first);
+
+                        break;
+                }
             }
 
             first = false;
@@ -414,6 +423,63 @@ public class HomeController(
             Entry userPrompt = new Entry
             {
                 Type = ConversationType.UploadFile,
+                Text = postedFile.FileName,
+                FileData = byteArray,
+                Role = Role.user,
+                Sequence = conversation.PromptsOrSearches.Count + 1,
+                ResultText = ""
+            };
+            conversation.PromptsOrSearches.Add(userPrompt);
+        }
+
+        await conversation.RunConversation(SemanticKernelService, _backend);
+        conversation.Save();
+
+        ConversationVM vm = new ConversationVM();
+        vm.Id = conversationId;
+        vm.Description = conversation.Description;
+        vm.Title = conversation.Title;
+        vm.ParentId = conversation.ParentId;
+
+        vm.ConversationText = GenOutput(conversation);
+
+        return View("UserInteraction", vm);
+    }
+
+    public async Task<IActionResult> ImageToText(List<IFormFile> postedFiles, Guid conversationId)
+    {
+        Conversation conversation;
+        Guid conversationIdGuid = conversationId;
+
+        if (conversationIdGuid == Guid.Empty)
+        {
+#pragma warning disable CS8629 // Nullable value type may be null.
+            conversation = new Conversation
+            {
+                Title = "Test Conversation",
+                CreatedAt = DateTime.Now,
+                Description = "This is a test conversation",
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+                OwnerId = (User.GetUserIdentity()?.Id).Value
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            };
+#pragma warning restore CS8629 // Nullable value type may be null.
+            conversation.Save();
+        }
+        else
+        {
+            conversation = new Conversation();
+            conversation.Load(conversationIdGuid);
+        }
+
+        foreach (IFormFile postedFile in postedFiles)
+        {
+            using Stream fs = postedFile.OpenReadStream();
+            byte[] byteArray = new byte[fs.Length];
+            fs.Read(byteArray, 0, (int)fs.Length);
+            Entry userPrompt = new Entry
+            {
+                Type = ConversationType.ImageToText,
                 Text = postedFile.FileName,
                 FileData = byteArray,
                 Role = Role.user,

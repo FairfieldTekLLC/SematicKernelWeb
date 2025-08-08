@@ -25,6 +25,7 @@ public class Config
 
     public List<string> IgnoreSites { get; set; }
     public string SystemPrompt { get; set; }
+    public string VisionModel { get; set; }
 
 
     public string DatabaseName { get; set; }
@@ -57,6 +58,7 @@ public class Config
             LogFilePath = config.LogFilePath;
             CurrentLogLevel = config.CurrentLogLevel;
             ComfyUrl = config.ComfyUrl;
+            VisionModel= config.VisionModel;
         }
     }
 }

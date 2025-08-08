@@ -1,8 +1,15 @@
-﻿using System.Diagnostics;
-using Microsoft.KernelMemory;
+﻿using Microsoft.KernelMemory;
 using Microsoft.KernelMemory.Context;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.ImageToText;
+using Newtonsoft.Json;
+using System.Diagnostics;
+using NewsReader.Data_Classes;
+using SematicKernelWeb.Classes;
+using SematicKernelWeb.Domain.Data_Classes;
+
+using System.Net.Http.Headers;
 
 namespace SematicKernelWeb.SemanticKernel;
 
@@ -87,8 +94,46 @@ public class SemanticKernelService(Kernel kernel, IKernelMemory memory) : ISeman
         return kernel.GetRequiredService<IChatCompletionService>();
     }
 
+
     public Kernel GetKernel()
     {
         return kernel;
+    }
+
+    public class OllamaSend
+    {
+        public string model { get; set; } = "";
+        public bool stream { get; set; } = false;
+
+        public string prompt { get; set; }
+        public string suffix { get; set; } = "";
+        public List<string> images { get; set; }=new List<string>();
+
+
+    }
+
+    public enum EndpointType
+    {
+        chat,
+        generate
+    }
+
+    public async Task<OllamaResult?> ProcessOllamaMsg(OllamaSend toSend, EndpointType endpointType)
+    {
+
+
+
+
+        HttpClient client = new HttpClient();
+        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Config.Instance.OllamaServerUrl +"/api/generate");
+        string json = JsonConvert.SerializeObject(toSend);
+        request.Content = new StringContent(json);
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+        HttpResponseMessage response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        string responseBody = await response.Content.ReadAsStringAsync();
+        OllamaResult? ollamaResult = JsonConvert.DeserializeObject<OllamaResult>(responseBody);
+        return ollamaResult;
+
     }
 }

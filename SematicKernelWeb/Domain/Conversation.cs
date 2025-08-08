@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net.Mime;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
@@ -79,14 +80,14 @@ public class Conversation
 
 
                 e.FetchedDocuments = (from doc in entry.Fetcheddocs
-                    select new HTMLDocs
-                    {
-                        Body = doc.Body,
-                        Id = doc.Pkfetchdocid,
-                        MemoryKey = doc.Memorykey,
-                        Uri = doc.Uri,
-                        Summary = doc.Summary
-                    }).ToList();
+                                      select new HTMLDocs
+                                      {
+                                          Body = doc.Body,
+                                          Id = doc.Pkfetchdocid,
+                                          MemoryKey = doc.Memorykey,
+                                          Uri = doc.Uri,
+                                          Summary = doc.Summary
+                                      }).ToList();
 
                 PromptsOrSearches.Add(e);
             }
@@ -389,11 +390,11 @@ public class Conversation
             switch (item.Type)
             {
                 case ConversationType.ImportText:
-                {
-                    //No need to send this to the kernel, it is already imported
-                    await ImportText(item, kernal, worker);
-                    break;
-                }
+                    {
+                        //No need to send this to the kernel, it is already imported
+                        await ImportText(item, kernal, worker);
+                        break;
+                    }
                 case ConversationType.Prompt:
                     messages.Add(new Message
                     {
@@ -429,6 +430,10 @@ public class Conversation
                                 hist.AddUserMessage(itm.content);
                             else if (itm.role.Equals(Role.system))
                                 hist.AddSystemMessage(itm.content);
+
+
+
+
                         string longTermMemory = await kernal.AskAsync(item.Text, Id, OwnerId);
                         if (longTermMemory != string.Empty)
                             hist.AddUserMessage("Kernel Memory Answer: " + longTermMemory);
@@ -471,26 +476,44 @@ public class Conversation
 
                     break;
                 case ConversationType.WebSearch:
-                {
-                    //No need to send this to the kernel, it is already imported
-                    await ImportWebSearch(item, kernal, worker);
+                    {
+                        //No need to send this to the kernel, it is already imported
+                        await ImportWebSearch(item, kernal, worker);
 
-                    break;
-                }
+                        break;
+                    }
                 case ConversationType.UrlFetch:
-                {
-                    //No need to send this to the kernel, it is already imported
-                    await ImportUrl(item, kernal, worker);
+                    {
+                        //No need to send this to the kernel, it is already imported
+                        await ImportUrl(item, kernal, worker);
 
-                    break;
-                }
+                        break;
+                    }
                 case ConversationType.UploadFile:
-                {
-                    //No need to send this to the kernel, it is already imported
-                    await ImportFile(item, kernal, worker);
+                    {
+                        //No need to send this to the kernel, it is already imported
+                        await ImportFile(item, kernal, worker);
 
-                    break;
-                }
+                        break;
+                    }
+                case ConversationType.ImageToText:
+                    {
+                        if (string.IsNullOrEmpty(item.ResultText))
+                        {
+                            SemanticKernelService.OllamaSend msg = new SemanticKernelService.OllamaSend
+                            {
+                                model = Config.Instance.VisionModel,
+                                prompt = "What is in this picture?",
+                                images = [Convert.ToBase64String(item.FileData)],
+                                stream = false
+                            };
+                            var result = await kernal.ProcessOllamaMsg(msg,SemanticKernelService.EndpointType.generate);
+
+                            item.ResultText = result.response;
+                        }
+
+                        break;
+                    }
             }
     }
 }
