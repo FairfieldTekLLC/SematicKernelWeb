@@ -490,6 +490,14 @@ public class Conversation
                         item.ResultText = output.ToString();
                         worker.SendMessage(Id, "Finished processing conversation");
                     }
+                    else
+                    {
+                        messages.Add(new Message()
+                        {
+                            content = item.ResultText,
+                            role = nameof(Role.assistant)
+                        });
+                    }
 
                     break;
                 case ConversationType.WebSearch:
