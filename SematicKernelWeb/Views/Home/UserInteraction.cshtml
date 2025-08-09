@@ -50,8 +50,10 @@
             
             <div id="ImageToTextUpload" style="display:none">
                 <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="ImageToText">
-                    <span>Select File:</span>
+                    
                     <input type="text" name="ConversationId" id="ConversationID" style="visibility:collapse" value="@Model.Id"/>
+                    <textarea id="txtpromptimgtotext" name="txtpromptimgtotext" rows="10" style="width:100%"></textarea>
+                    <span>Select File:</span>
                     <input type="file" name="postedFiles" accept=".jpg,.jpeg,.png,.gif,.bmp,.tiff,.ico,.svg" multiple/>
                     <input type="submit" value="Upload"/>
                     <br/>
@@ -89,6 +91,7 @@
             $("#btn-submit").hide();
             $("#FileUpload").show();
             $("#ImageToTextUpload").hide();
+            $("#btn-create-conversation").hide();
         }
         else if (conceptName=="imageToText")
         {
@@ -96,6 +99,7 @@
             $("#btn-submit").hide();
             $("#FileUpload").hide();
             $("#ImageToTextUpload").show();
+            $("#btn-create-conversation").hide();
         }
         else
         {
@@ -103,6 +107,7 @@
             $("#btn-submit").show();
             $("#FileUpload").hide();
             $("#ImageToTextUpload").hide();
+            $("#btn-create-conversation").show();
         }
     }
 

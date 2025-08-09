@@ -1,4 +1,4 @@
-using System.Diagnostics;
+using iTextSharp.text.html.simpleparser;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +10,7 @@ using SematicKernelWeb.Models;
 using SematicKernelWeb.SemanticKernel;
 using SematicKernelWeb.SemanticKernel.Models;
 using SematicKernelWeb.Services;
+using System.Diagnostics;
 //using SematicKernelWeb.ClaimsIdentities;
 using Conversation = SematicKernelWeb.Domain.Conversation;
 using ConversationType = SematicKernelWeb.Domain.ConversationType;
@@ -446,7 +447,7 @@ public class HomeController(
         return View("UserInteraction", vm);
     }
 
-    public async Task<IActionResult> ImageToText(List<IFormFile> postedFiles, Guid conversationId)
+    public async Task<IActionResult> ImageToText(List<IFormFile> postedFiles, Guid conversationId,string txtpromptimgtotext)
     {
         Conversation conversation;
         Guid conversationIdGuid = conversationId;
@@ -479,8 +480,9 @@ public class HomeController(
             fs.Read(byteArray, 0, (int)fs.Length);
             Entry userPrompt = new Entry
             {
+                
                 Type = ConversationType.ImageToText,
-                Text = postedFile.FileName,
+                Text = txtpromptimgtotext,
                 FileData = byteArray,
                 Role = Role.user,
                 Sequence = conversation.PromptsOrSearches.Count + 1,

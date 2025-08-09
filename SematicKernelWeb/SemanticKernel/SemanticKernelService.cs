@@ -107,7 +107,7 @@ public class SemanticKernelService(Kernel kernel, IKernelMemory memory) : ISeman
 
         public string prompt { get; set; }
         public string suffix { get; set; } = "";
-        public List<string> images { get; set; }=new List<string>();
+        public List<string> images { get; set; } = new List<string>();
 
 
     }
@@ -120,12 +120,13 @@ public class SemanticKernelService(Kernel kernel, IKernelMemory memory) : ISeman
 
     public async Task<OllamaResult?> ProcessOllamaMsg(OllamaSend toSend, EndpointType endpointType)
     {
-
-
-
-
+        
         HttpClient client = new HttpClient();
-        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, Config.Instance.OllamaServerUrl +"/api/generate");
+
+        HttpRequestMessage request;
+
+        request = endpointType == EndpointType.chat ? new HttpRequestMessage(HttpMethod.Post, Config.Instance.OllamaServerUrl + "/api/chat") : new HttpRequestMessage(HttpMethod.Post, Config.Instance.OllamaServerUrl + "/api/generate");
+
         string json = JsonConvert.SerializeObject(toSend);
         request.Content = new StringContent(json);
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");

@@ -386,6 +386,8 @@ public class Conversation
     {
         await worker.SendMessage(Id, "Starting conversation.....");
         List<Message> messages = new List<Message>();
+
+
         foreach (Entry item in PromptsOrSearches.OrderBy(x => x.Sequence))
             switch (item.Type)
             {
@@ -422,14 +424,21 @@ public class Conversation
                         await worker.SendMessage(Id, "Searching long term memory.");
 
 
-                        foreach (var itm in messages.Where(itm =>
-                                     itm.role.Equals("ask", StringComparison.InvariantCultureIgnoreCase)))
-                            if (itm.role.Equals(Role.assistant))
-                                hist.AddAssistantMessage(itm.content);
-                            else if (itm.role.Equals(Role.user))
-                                hist.AddUserMessage(itm.content);
-                            else if (itm.role.Equals(Role.system))
-                                hist.AddSystemMessage(itm.content);
+                        foreach (var itm in messages.Where(itm => itm.role.Equals("ask", StringComparison.InvariantCultureIgnoreCase)))
+                            switch (itm.role)
+                            {
+                                case nameof(Role.assistant):
+                                    hist.AddAssistantMessage(itm.content);
+
+                                    break;
+                                case nameof(Role.user):
+                                    hist.AddUserMessage(itm.content);
+                                    break;
+                                case nameof(Role.system):
+                                    hist.AddSystemMessage(itm.content);
+                                    break;
+                            }
+
 
 
 
@@ -441,6 +450,14 @@ public class Conversation
                         hist.AddSystemMessage("conversation Id: " + Id);
                         hist.AddSystemMessage("Owner Id: " + OwnerId);
                         hist.AddUserMessage(item.Text);
+
+
+
+
+
+
+
+
 
 
                         //Get the chat service from the kernel
@@ -480,6 +497,12 @@ public class Conversation
                         //No need to send this to the kernel, it is already imported
                         await ImportWebSearch(item, kernal, worker);
 
+                        messages.Add(new Message()
+                        {
+                            content = item.ResultText ?? "",
+                            role = item.Role.ToString().ToLowerInvariant()
+                        });
+
                         break;
                     }
                 case ConversationType.UrlFetch:
@@ -503,14 +526,19 @@ public class Conversation
                             SemanticKernelService.OllamaSend msg = new SemanticKernelService.OllamaSend
                             {
                                 model = Config.Instance.VisionModel,
-                                prompt = "What is in this picture?",
+                                prompt = item.Text,
                                 images = [Convert.ToBase64String(item.FileData)],
                                 stream = false
                             };
-                            var result = await kernal.ProcessOllamaMsg(msg,SemanticKernelService.EndpointType.generate);
+                            var result = await kernal.ProcessOllamaMsg(msg, SemanticKernelService.EndpointType.generate);
 
                             item.ResultText = result.response;
                         }
+                        messages.Add(new Message
+                        {
+                            content = item.ResultText,
+                            role = item.Role.ToString().ToLowerInvariant()
+                        });
 
                         break;
                     }
