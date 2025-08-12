@@ -20,4 +20,6 @@ public class Entry
     public byte[] FileData { get; set; } = null;
 
     public bool IsHidden { get; set; } = false;
+
+    public string OptionalField1 { get; set; }
 }

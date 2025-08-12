@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Mime;
 using System.Text;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -382,13 +383,35 @@ public class Conversation
         }
     }
 
-    public async Task RunConversation(ISemanticKernelService kernal, IBackendWorker worker)
+
+
+
+    
+
+    public string GetMimeTypeForFileExtension(string filePath)
+    {
+        const string DefaultContentType = "application/octet-stream";
+
+        var provider = new FileExtensionContentTypeProvider();
+
+        if (!provider.TryGetContentType(filePath, out string contentType))
+        {
+            contentType = DefaultContentType;
+        }
+
+        return contentType;
+    }
+
+
+
+public async Task RunConversation(ISemanticKernelService kernal, IBackendWorker worker)
     {
         await worker.SendMessage(Id, "Starting conversation.....");
         List<Message> messages = new List<Message>();
 
 
         foreach (Entry item in PromptsOrSearches.OrderBy(x => x.Sequence))
+        {
             switch (item.Type)
             {
                 case ConversationType.ImportText:
@@ -407,6 +430,7 @@ public class Conversation
 
                     break;
                 case ConversationType.Ask:
+                case ConversationType.ImageToText:
 
                     if (item.ResultText == string.Empty)
                     {
@@ -424,23 +448,24 @@ public class Conversation
                         await worker.SendMessage(Id, "Searching long term memory.");
 
 
-                        foreach (var itm in messages.Where(itm => itm.role.Equals("ask", StringComparison.InvariantCultureIgnoreCase)))
-                            switch (itm.role)
-                            {
-                                case nameof(Role.assistant):
-                                    hist.AddAssistantMessage(itm.content);
+                        foreach (Message itm in messages)
+                        {
+                            if (itm.role.Equals("ask", StringComparison.InvariantCultureIgnoreCase))
+                                switch (itm.role)
+                                {
+                                    case nameof(Role.assistant):
+                                        hist.AddAssistantMessage(itm.content);
 
-                                    break;
-                                case nameof(Role.user):
-                                    hist.AddUserMessage(itm.content);
-                                    break;
-                                case nameof(Role.system):
-                                    hist.AddSystemMessage(itm.content);
-                                    break;
-                            }
-
-
-
+                                        break;
+                                    case nameof(Role.user):
+                                        hist.AddUserMessage(itm.content);
+                                       
+                                        break;
+                                    case nameof(Role.system):
+                                        hist.AddSystemMessage(itm.content);
+                                        break;
+                                }
+                        }
 
 
                         string longTermMemory = await kernal.AskAsync(item.Text, Id, OwnerId);
@@ -449,7 +474,21 @@ public class Conversation
 
                         hist.AddSystemMessage("conversation Id: " + Id);
                         hist.AddSystemMessage("Owner Id: " + OwnerId);
-                        hist.AddUserMessage(item.Text);
+                        
+
+                        if (item.Type == ConversationType.ImageToText)
+                        {
+                            
+                            //ReadOnlyMemory<byte> img = new ReadOnlyMemory<byte>(item.FileData);
+                            //hist.AddMessage(AuthorRole.User, new ChatMessageContentItemCollection()
+                            //{
+                            //    new ImageContent(img,GetMimeTypeForFileExtension()),
+                            //});
+                        }
+                        else
+                        {
+                            hist.AddUserMessage(item.Text);
+                        }
 
 
 
@@ -459,10 +498,9 @@ public class Conversation
 
 
 
+                            //Get the chat service from the kernel
 
-                        //Get the chat service from the kernel
-
-                        var chatService = kernal.GetKernel().GetRequiredService<IChatCompletionService>();
+                            var chatService = kernal.GetKernel().GetRequiredService<IChatCompletionService>();
 
                         await worker.SendMessage(Id, "Processing Chat history.");
 
@@ -527,29 +565,31 @@ public class Conversation
 
                         break;
                     }
-                case ConversationType.ImageToText:
-                    {
-                        if (string.IsNullOrEmpty(item.ResultText))
-                        {
-                            SemanticKernelService.OllamaSend msg = new SemanticKernelService.OllamaSend
-                            {
-                                model = Config.Instance.VisionModel,
-                                prompt = item.Text,
-                                images = [Convert.ToBase64String(item.FileData)],
-                                stream = false
-                            };
-                            var result = await kernal.ProcessOllamaMsg(msg, SemanticKernelService.EndpointType.generate);
+                //case ConversationType.ImageToText:
+                //    {
+                //        if (string.IsNullOrEmpty(item.ResultText))
+                //        {
+                //            SemanticKernelService.OllamaSend msg = new SemanticKernelService.OllamaSend
+                //            {
+                //                model = Config.Instance.VisionModel,
+                //                prompt = item.Text,
+                //                images = [Convert.ToBase64String(item.FileData)],
+                //                stream = false
+                //            };
+                //            var result = await kernal.ProcessOllamaMsg(msg, SemanticKernelService.EndpointType.generate);
 
-                            item.ResultText = result.response;
-                        }
-                        messages.Add(new Message
-                        {
-                            content = item.ResultText,
-                            role = item.Role.ToString().ToLowerInvariant()
-                        });
+                //            item.ResultText = result.response;
+                //        }
 
-                        break;
-                    }
+                //        messages.Add(new Message
+                //        {
+                //            content = item.ResultText,
+                //            role = item.Role.ToString().ToLowerInvariant()
+                //        });
+
+                //        break;
+                //    }
             }
+        }
     }
 }

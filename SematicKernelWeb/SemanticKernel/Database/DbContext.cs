@@ -22,20 +22,9 @@ public class DbContext
         await ConfigureVectors();
     }
 
-    private async Task CreateDatabase()
-    {
-        // create database if it doesn't exist
-        await using NpgsqlConnection connection =
-            new NpgsqlConnection(Config.Instance.ConnectionString.Replace(Config.Instance.DatabaseName, "postgres"));
-        string sqlDbCount =
-            $"SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '{Config.Instance.DatabaseName}');";
-        int dbCount = await connection.ExecuteScalarAsync<int>(sqlDbCount);
-        if (dbCount == 0)
-        {
-            string sql = $"CREATE DATABASE \"{Config.Instance.DatabaseName}\"";
-            await connection.ExecuteAsync(sql);
-        }
 
+    public async Task CreateSecurityObjectTable()
+    {
         string SecurityObjectTableSql = @"
                                             CREATE TABLE IF NOT EXISTS public.securityobjects
 (
@@ -56,7 +45,11 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.securityobjects
     OWNER to postgres;
 ";
-        await connection.ExecuteAsync(SecurityObjectTableSql);
+        await RunSql(SecurityObjectTableSql);
+    }
+
+    public async Task CreateConversationTable()
+    {
         string ConversationTableSql = @"
 
 CREATE TABLE IF NOT EXISTS public.conversation
@@ -80,7 +73,11 @@ ALTER TABLE IF EXISTS public.conversation
     OWNER to postgres;
 ";
 
-        await connection.ExecuteAsync(ConversationTableSql);
+        await RunSql(ConversationTableSql);
+    }
+
+    public async Task CreateConversationTypes()
+    {
         string ConversationtypeTableSql = @"
 
 CREATE TABLE IF NOT EXISTS public.conversationtypes
@@ -95,8 +92,11 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.conversationtypes
     OWNER to postgres;
 ";
-        await connection.ExecuteAsync(ConversationtypeTableSql);
+        await RunSql(ConversationtypeTableSql);
+    }
 
+    public async Task CreateRole()
+    {
         string rolesql = @"
 CREATE TABLE IF NOT EXISTS public.role
 (
@@ -111,8 +111,11 @@ ALTER TABLE IF EXISTS public.role
     OWNER to postgres;
 
 ";
-        await connection.ExecuteAsync(rolesql);
+         await RunSql(rolesql);
+    }
 
+    public async Task createEntryTable()
+    {
         string entrysql = @"
 
 CREATE TABLE IF NOT EXISTS public.entry
@@ -127,6 +130,7 @@ CREATE TABLE IF NOT EXISTS public.entry
     sequence integer NOT NULL,
     filedata bytea,
     ishidden smallint NOT NULL,
+    OptionalField1  text COLLATE pg_catalog.""default"",
     CONSTRAINT pk_entry PRIMARY KEY (pkentryid),
     CONSTRAINT fk_entry_conversation FOREIGN KEY (fkconversationid)
         REFERENCES public.conversation (pkconversationid) MATCH SIMPLE
@@ -147,7 +151,12 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.entry
     OWNER to postgres;
 ";
-        await connection.ExecuteAsync(entrysql);
+         await RunSql(entrysql);
+    }
+
+    public async Task CreateFetchDocs()
+    {
+
         string fetchedDocumentsSql = @"
 
 CREATE TABLE IF NOT EXISTS public.fetcheddocs
@@ -170,7 +179,34 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.fetcheddocs
     OWNER to postgres;
 ";
-        await connection.ExecuteAsync(fetchedDocumentsSql);
+         await RunSql(fetchedDocumentsSql);
+    }
+
+    private async Task CreateDatabase()
+    {
+        // create database if it doesn't exist
+        await using NpgsqlConnection connection =
+            new NpgsqlConnection(Config.Instance.ConnectionString.Replace(Config.Instance.DatabaseName, "postgres"));
+        string sqlDbCount =
+            $"SELECT EXISTS(SELECT datname FROM pg_catalog.pg_database WHERE datname = '{Config.Instance.DatabaseName}');";
+        int dbCount = await connection.ExecuteScalarAsync<int>(sqlDbCount);
+        if (dbCount == 0)
+        {
+            string sql = $"CREATE DATABASE \"{Config.Instance.DatabaseName}\"";
+            await connection.ExecuteAsync(sql);
+        }
+
+        await CreateSecurityObjectTable();
+        await CreateConversationTable();
+        await CreateConversationTypes();
+        await CreateRole();
+        await createEntryTable();
+        await CreateFetchDocs();
+
+
+
+
+
 
         using (var ctx = new NewsReaderContext())
         {
@@ -212,4 +248,16 @@ ALTER TABLE IF EXISTS public.fetcheddocs
         if (connection != null)
             await connection.ReloadTypesAsync();
     }
+
+    private async Task RunSql(string sql)
+    {
+        await using NpgsqlConnection? connection = CreateConnection() as NpgsqlConnection;
+
+        await using (NpgsqlCommand cmd = new NpgsqlCommand(sql, connection))
+        {
+            await cmd.ExecuteNonQueryAsync();
+        }
+
+    }
+
 }

@@ -486,7 +486,8 @@ public class HomeController(
                 FileData = byteArray,
                 Role = Role.user,
                 Sequence = conversation.PromptsOrSearches.Count + 1,
-                ResultText = ""
+                ResultText = "",
+                
             };
             conversation.PromptsOrSearches.Add(userPrompt);
         }
