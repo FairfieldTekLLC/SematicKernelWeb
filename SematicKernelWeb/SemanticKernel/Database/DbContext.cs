@@ -51,6 +51,9 @@ ALTER TABLE IF EXISTS public.securityobjects
     public async Task CreateConversationTable()
     {
         string ConversationTableSql = @"
+-- Table: public.conversation
+
+-- DROP TABLE IF EXISTS public.conversation;
 
 CREATE TABLE IF NOT EXISTS public.conversation
 (
@@ -60,6 +63,7 @@ CREATE TABLE IF NOT EXISTS public.conversation
     title text COLLATE pg_catalog.""default"" NOT NULL,
     createdat timestamp(3) without time zone NOT NULL,
     description text COLLATE pg_catalog.""default"" NOT NULL,
+    ""SerializedChat"" text COLLATE pg_catalog.""default"",
     CONSTRAINT pk_conversation PRIMARY KEY (pkconversationid),
     CONSTRAINT fk_conversation_securityobjects FOREIGN KEY (fksecurityobjectowner)
         REFERENCES public.securityobjects (activedirectoryid) MATCH SIMPLE
